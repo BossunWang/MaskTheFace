@@ -18,6 +18,13 @@ parser.add_argument(
     default="",
     help="Path to either the folder containing images or the image itself",
 )
+
+parser.add_argument(
+    "--write_path",
+    type=str,
+    default="",
+    help="Path to output the folder containing masked images or the image itself",
+)
 parser.add_argument(
     "--mask_type",
     type=str,
@@ -75,7 +82,6 @@ parser.add_argument(
 parser.set_defaults(feature=False)
 
 args = parser.parse_args()
-args.write_path = args.path + "_masked"
 
 # Set up dlib face detector and predictor
 args.detector = dlib.get_frontal_face_detector()
@@ -103,7 +109,7 @@ for i, entry in enumerate(mask_code):
         else:
             mask_texture = mask_variation
     mask_dict["type"] = mask_type
-    mask_dict["color"] = mask_color
+    mask_dict["color"] = args.color
     mask_dict["texture"] = mask_texture
     args.mask_dict_of_dict[i] = mask_dict
 
@@ -122,7 +128,7 @@ if is_directory:
     for f in tqdm(files):
         image_path = path + "/" + f
 
-        write_path = path + "_masked"
+        write_path = args.write_path
         if not os.path.isdir(write_path):
             os.makedirs(write_path)
 
@@ -143,6 +149,8 @@ if is_directory:
                     + split_path[0]
                     + "_"
                     + mask[i]
+                    + "_"
+                    + mask_dict["color"]
                     + "."
                     + split_path[1]
                 )
@@ -179,6 +187,8 @@ if is_directory:
                         + split_path[0]
                         + "_"
                         + mask[i]
+                        + "_"
+                        + mask_dict["color"]
                         + "."
                         + split_path[1]
                     )
